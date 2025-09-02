@@ -6,6 +6,8 @@ using System.Web;
 
 namespace BaldrickGUI {
     internal class Actions {
+        private const int Baldrick_DataColumns = 9;
+
         internal static async Task UpdateBaldrick(Label update_baldrick_info) {
             update_baldrick_info.Text = "";
 
@@ -110,7 +112,7 @@ namespace BaldrickGUI {
             
             // @TODO input validation
             string topLeftCell = Microsoft.VisualBasic.Interaction.InputBox("Enter the TOP LEFT CELL", "Data Entry");
-            // @TODO parse TLC to 0 indexed Tuple<int,int> (row,column)
+            var tlc = Utilities.ParseTLC(topLeftCell);
 
             try {
                 Uri uri = new Uri(url_string);
@@ -133,7 +135,7 @@ namespace BaldrickGUI {
 
                 string gid = queryParams.Get("gid");
 
-                dataSource_info.Text = $"DID:\t{doc_id}\nGID:\t{gid}\nTLC:{topLeftCell}";
+                dataSource_info.Text = $"Doc ID:\t{doc_id}\nGID:\t{gid}\nCell:{topLeftCell}";
 
                 // download the big CSV
                 string csv_url = $"https://docs.google.com/spreadsheets/d/{doc_id}/export?format=csv&gid={gid}";
@@ -153,13 +155,11 @@ namespace BaldrickGUI {
                 using (var reader = new StreamReader("./raw_gsheet.csv")) {
                     var raw_data = reader.ReadToEnd();
                     raw_data = raw_data.Replace("\r\n", "\n");  // remove CRLF nonsense
-                    // @TODO use converted top left cell data for skips
-                    var rows = raw_data.Split("\n").Skip(1);
+                    
+                    var rows = raw_data.Split("\n").Skip(tlc.Item2 - 1);
 
                     foreach (var row in rows) {
-                        // @TODO refactor out magic numbers
-                        // @TODO use converted top left cell data for skips
-                        var raw_row = row.Split(",").Skip(5).ToList().GetRange(0, 9);
+                        var raw_row = row.Split(",").Skip(tlc.Item1).ToList().GetRange(0, Baldrick_DataColumns);
                         var data = String.Join(",", raw_row).Replace("\"", "");
                         if (data.Contains("#VALUE!")) {
                             break;  // End of useful data,   Note:  Tailored to Castor's GSheet
