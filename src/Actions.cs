@@ -98,7 +98,22 @@ namespace BaldrickGUI {
         internal static bool LocalDataSelected(Label dataSource_info, Label select_data_source_info) {
             bool result = false;
 
-            select_data_source_info.Text = "ERROR:  Not implemented";
+            var dialog = new OpenFileDialog();
+            dialog.Filter = "CSV files (*.csv)|*.csv";
+            dialog.Title = "Select Baldrick compatible CSV";
+            dialog.InitialDirectory = "./";
+            dialog.Multiselect = false;
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
+
+            var dialogResult = dialog.ShowDialog();
+
+            if (dialogResult == DialogResult.OK) {
+                string path = dialog.FileName;
+
+                dataSource_info.Text = $"File:\n{path}";
+                result = true;
+            }
 
             return result;
         }
