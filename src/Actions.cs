@@ -106,7 +106,7 @@ namespace BaldrickGUI {
             return result;
         }
 
-        internal static bool GoogleSheetsDataSelected(Label dataSource_info, Label select_data_source_info) {
+        internal static async Task<bool> GoogleSheetsDataSelected(Label dataSource_info, Label select_data_source_info) {
             bool result = false;
 
             string url_string = Microsoft.VisualBasic.Interaction.InputBox("Enter a PUBLIC Google Sheets URL", "Data Entry");
@@ -134,6 +134,19 @@ namespace BaldrickGUI {
                 string gid = queryParams.Get("gid");
 
                 dataSource_info.Text = $"DID:\t{doc_id}\nGID:\t{gid}\nTLC:{topLeftCell}";
+
+                // download the big CSV
+                string csv_url = $"https://docs.google.com/spreadsheets/d/{doc_id}/export?format=csv&gid={gid}";
+                
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.TryParseAdd("request");
+
+                using (Stream contentStream = await client.GetStreamAsync(csv_url)) {
+                    using (FileStream fileStream = new FileStream("./raw_gsheet.csv", FileMode.Create, FileAccess.Write)) {
+                        await contentStream.CopyToAsync(fileStream);
+                    }
+                }
+
                 result = true;
             }
             catch (UriFormatException e) {

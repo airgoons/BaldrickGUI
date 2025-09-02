@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace BaldrickGUI
 {
@@ -24,13 +25,14 @@ namespace BaldrickGUI
             }
         }
 
-        private void radioButton2_CheckedChanged(object sender, EventArgs e) {
+        private async void radioButton2_CheckedChanged(object sender, EventArgs e) {
             if (radioButton2.Checked) {
                 // open dialog
                 dataSource_info.Text = "";
                 select_data_source_info.Text = "";
-                bool result = Actions.GoogleSheetsDataSelected(dataSource_info, select_data_source_info);
 
+                bool result = await Actions.GoogleSheetsDataSelected(dataSource_info, select_data_source_info);
+                
                 if (result) {
                     runBaldrick_button.Enabled = true;
                 }
@@ -52,3 +54,4 @@ namespace BaldrickGUI
         }
     }
 }
+
