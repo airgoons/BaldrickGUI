@@ -22,8 +22,10 @@ namespace BaldrickGUI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e) {
-            Actions.UpdateBaldrick();
+        private async void button1_Click(object sender, EventArgs e) {
+            button1.Enabled = false;
+            await Actions.UpdateBaldrick(update_baldrick_info);
+            button1.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e) {

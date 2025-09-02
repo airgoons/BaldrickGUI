@@ -38,6 +38,8 @@
             flowLayoutPanel2 = new FlowLayoutPanel();
             label2 = new Label();
             label3 = new Label();
+            update_baldrick_info = new Label();
+            run_baldrick_info = new Label();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -47,18 +49,21 @@
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.ColumnCount = 3;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.2570343F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.25703F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3714867F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3714867F));
             tableLayoutPanel1.Controls.Add(button1, 0, 0);
             tableLayoutPanel1.Controls.Add(button2, 2, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 1, 0);
+            tableLayoutPanel1.Controls.Add(update_baldrick_info, 0, 1);
+            tableLayoutPanel1.Controls.Add(run_baldrick_info, 2, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 1;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(751, 247);
+            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 90F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
+            tableLayoutPanel1.Size = new Size(751, 347);
             tableLayoutPanel1.TabIndex = 0;
             // 
             // button1
@@ -69,7 +74,7 @@
             button1.Font = new Font("Consolas", 15.75F, FontStyle.Bold);
             button1.Location = new Point(3, 3);
             button1.Name = "button1";
-            button1.Size = new Size(243, 251);
+            button1.Size = new Size(243, 306);
             button1.TabIndex = 0;
             button1.Text = "Update Baldrick";
             button1.UseVisualStyleBackColor = true;
@@ -84,7 +89,7 @@
             button2.ForeColor = SystemColors.ControlText;
             button2.Location = new Point(502, 3);
             button2.Name = "button2";
-            button2.Size = new Size(246, 251);
+            button2.Size = new Size(246, 306);
             button2.TabIndex = 1;
             button2.Text = "Run Baldrick";
             button2.UseVisualStyleBackColor = true;
@@ -107,7 +112,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
-            tableLayoutPanel2.Size = new Size(244, 251);
+            tableLayoutPanel2.Size = new Size(244, 306);
             tableLayoutPanel2.TabIndex = 2;
             // 
             // label1
@@ -117,7 +122,7 @@
             label1.Font = new Font("Consolas", 15.75F, FontStyle.Bold);
             label1.Location = new Point(3, 0);
             label1.Name = "label1";
-            label1.Size = new Size(238, 25);
+            label1.Size = new Size(238, 30);
             label1.TabIndex = 0;
             label1.Text = "Select Data Source";
             label1.TextAlign = ContentAlignment.BottomCenter;
@@ -129,9 +134,9 @@
             flowLayoutPanel1.Controls.Add(radioButton1);
             flowLayoutPanel1.Controls.Add(radioButton2);
             flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel1.Location = new Point(3, 28);
+            flowLayoutPanel1.Location = new Point(3, 33);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(238, 106);
+            flowLayoutPanel1.Size = new Size(238, 131);
             flowLayoutPanel1.TabIndex = 1;
             // 
             // radioButton1
@@ -168,9 +173,9 @@
             flowLayoutPanel2.Controls.Add(label2);
             flowLayoutPanel2.Controls.Add(label3);
             flowLayoutPanel2.FlowDirection = FlowDirection.TopDown;
-            flowLayoutPanel2.Location = new Point(3, 140);
+            flowLayoutPanel2.Location = new Point(3, 170);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
-            flowLayoutPanel2.Size = new Size(238, 108);
+            flowLayoutPanel2.Size = new Size(238, 133);
             flowLayoutPanel2.TabIndex = 2;
             // 
             // label2
@@ -195,15 +200,39 @@
             label3.TabIndex = 1;
             label3.Text = "No data selected.";
             // 
+            // update_baldrick_info
+            // 
+            update_baldrick_info.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            update_baldrick_info.AutoSize = true;
+            update_baldrick_info.Font = new Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            update_baldrick_info.Location = new Point(3, 312);
+            update_baldrick_info.Name = "update_baldrick_info";
+            update_baldrick_info.Size = new Size(243, 35);
+            update_baldrick_info.TabIndex = 3;
+            update_baldrick_info.Text = "";
+            update_baldrick_info.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // run_baldrick_info
+            // 
+            run_baldrick_info.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            run_baldrick_info.AutoSize = true;
+            run_baldrick_info.Font = new Font("Consolas", 8.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            run_baldrick_info.Location = new Point(502, 312);
+            run_baldrick_info.Name = "run_baldrick_info";
+            run_baldrick_info.Size = new Size(246, 35);
+            run_baldrick_info.TabIndex = 4;
+            run_baldrick_info.Text = "Run Baldrick Info";
+            run_baldrick_info.TextAlign = ContentAlignment.MiddleLeft;
+            // 
             // Form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             AutoSize = true;
             AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            ClientSize = new Size(751, 247);
+            ClientSize = new Size(751, 347);
             Controls.Add(tableLayoutPanel1);
-            MinimumSize = new Size(767, 286);
+            MinimumSize = new Size(767, 386);
             Name = "Form";
             Text = "BaldrickGUI";
             tableLayoutPanel1.ResumeLayout(false);
@@ -230,5 +259,7 @@
         private RadioButton radioButton2;
         private Label label2;
         private Label label3;
+        private Label update_baldrick_info;
+        private Label run_baldrick_info;
     }
 }
