@@ -1,12 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.IO.Compression;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Specialized;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace BaldrickGUI {
@@ -103,6 +98,8 @@ namespace BaldrickGUI {
         internal static bool LocalDataSelected(Label dataSource_info, Label select_data_source_info) {
             bool result = false;
 
+            select_data_source_info.Text = "ERROR:  Not implemented";
+
             return result;
         }
 
@@ -110,7 +107,10 @@ namespace BaldrickGUI {
             bool result = false;
 
             string url_string = Microsoft.VisualBasic.Interaction.InputBox("Enter a PUBLIC Google Sheets URL", "Data Entry");
+            
+            // @TODO input validation
             string topLeftCell = Microsoft.VisualBasic.Interaction.InputBox("Enter the TOP LEFT CELL", "Data Entry");
+            // @TODO parse TLC to 0 indexed Tuple<int,int> (row,column)
 
             try {
                 Uri uri = new Uri(url_string);
@@ -144,8 +144,31 @@ namespace BaldrickGUI {
                 using (Stream contentStream = await client.GetStreamAsync(csv_url)) {
                     using (FileStream fileStream = new FileStream("./raw_gsheet.csv", FileMode.Create, FileAccess.Write)) {
                         await contentStream.CopyToAsync(fileStream);
+                        select_data_source_info.Text = "Download complete.";
                     }
                 }
+
+                // @TODO refactor so local and gsheet use same parsing function on csv
+                List<string> outputRows = new List<string>();
+                using (var reader = new StreamReader("./raw_gsheet.csv")) {
+                    var raw_data = reader.ReadToEnd();
+                    raw_data = raw_data.Replace("\r\n", "\n");  // remove CRLF nonsense
+                    // @TODO use converted top left cell data for skips
+                    var rows = raw_data.Split("\n").Skip(1);
+
+                    foreach (var row in rows) {
+                        // @TODO refactor out magic numbers
+                        // @TODO use converted top left cell data for skips
+                        var raw_row = row.Split(",").Skip(5).ToList().GetRange(0, 9);
+                        var data = String.Join(",", raw_row).Replace("\"", "");
+                        if (data.Contains("#VALUE!")) {
+                            break;  // End of useful data,   Note:  Tailored to Castor's GSheet
+                        }
+                        outputRows.Add(data);
+                    }
+                }
+
+                File.WriteAllLines("./waypoints.csv", outputRows);
 
                 result = true;
             }

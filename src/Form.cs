@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Threading.Tasks;
-
 namespace BaldrickGUI
 {
     public partial class Form : System.Windows.Forms.Form {
