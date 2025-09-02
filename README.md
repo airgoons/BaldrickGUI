@@ -2,7 +2,7 @@
 BaldrickGUI is a graphical user interface for calling [Baldrick](https://github.com/CalirDeminar/Baldrick).
 
 ## Features
-- Automatically updates local copy of Baldrick
+- Manually updates local copy of Baldrick
 - Allows users to choose source data from:
     * Local Drive
     * Google Sheets
