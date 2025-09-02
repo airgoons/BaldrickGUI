@@ -6,8 +6,6 @@ using System.Web;
 
 namespace BaldrickGUI {
     internal class Actions {
-        private const int Baldrick_DataColumns = 9;
-
         internal static async Task UpdateBaldrick(Label update_baldrick_info) {
             update_baldrick_info.Text = "";
 
@@ -139,34 +137,19 @@ namespace BaldrickGUI {
 
                 // download the big CSV
                 string csv_url = $"https://docs.google.com/spreadsheets/d/{doc_id}/export?format=csv&gid={gid}";
-                
+
                 HttpClient client = new HttpClient();
                 client.DefaultRequestHeaders.UserAgent.TryParseAdd("request");
 
+                string raw_gsheet_path = "./raw_gsheet.csv";
                 using (Stream contentStream = await client.GetStreamAsync(csv_url)) {
-                    using (FileStream fileStream = new FileStream("./raw_gsheet.csv", FileMode.Create, FileAccess.Write)) {
+                    using (FileStream fileStream = new FileStream(raw_gsheet_path, FileMode.Create, FileAccess.Write)) {
                         await contentStream.CopyToAsync(fileStream);
                         select_data_source_info.Text = "Download complete.";
                     }
                 }
 
-                // @TODO refactor so local and gsheet use same parsing function on csv
-                List<string> outputRows = new List<string>();
-                using (var reader = new StreamReader("./raw_gsheet.csv")) {
-                    var raw_data = reader.ReadToEnd();
-                    raw_data = raw_data.Replace("\r\n", "\n");  // remove CRLF nonsense
-                    
-                    var rows = raw_data.Split("\n").Skip(tlc.Item2 - 1);
-
-                    foreach (var row in rows) {
-                        var raw_row = row.Split(",").Skip(tlc.Item1).ToList().GetRange(0, Baldrick_DataColumns);
-                        var data = String.Join(",", raw_row).Replace("\"", "");
-                        if (data.Contains("#VALUE!")) {
-                            break;  // End of useful data,   Note:  Tailored to Castor's GSheet
-                        }
-                        outputRows.Add(data);
-                    }
-                }
+                List<string> outputRows = Utilities.ExtractDataFromCSV(raw_gsheet_path, tlc);
 
                 File.WriteAllLines("./waypoints.csv", outputRows);
 
@@ -183,6 +166,8 @@ namespace BaldrickGUI {
 
             return result;
         }
+
+
 
         internal static void RunBaldrick() {
             // unzip baldrick

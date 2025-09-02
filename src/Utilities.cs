@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace BaldrickGUI {
     internal static class Utilities {
+        private const int Baldrick_DataColumns = 9;
+
         internal static Tuple<int,int>? ParseTLC(string tlc) {
             Tuple<int, int> result = null;
 
@@ -45,6 +47,32 @@ namespace BaldrickGUI {
             result = Tuple.Create(column, row);
 
             return result;
+        }
+
+        internal static List<string> ExtractDataFromCSV(string path, Tuple<int, int>? tlc)
+        {
+            List<string> outputRows = new List<string>();
+
+            using (var reader = new StreamReader(path))
+            {
+                var raw_data = reader.ReadToEnd();
+                raw_data = raw_data.Replace("\r\n", "\n");  // remove CRLF nonsense
+
+                var rows = raw_data.Split("\n").Skip(tlc.Item2 - 1);
+
+                foreach (var row in rows)
+                {
+                    var raw_row = row.Split(",").Skip(tlc.Item1).ToList().GetRange(0, Baldrick_DataColumns);
+                    var data = String.Join(",", raw_row).Replace("\"", "");
+                    if (data.Contains("#VALUE!"))
+                    {
+                        break;  // End of useful data,   Note:  Tailored to Castor's GSheet
+                    }
+                    outputRows.Add(data);
+                }
+            }
+
+            return outputRows;
         }
     }
 }
