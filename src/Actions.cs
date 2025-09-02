@@ -125,7 +125,18 @@ namespace BaldrickGUI {
             
             // @TODO input validation
             string topLeftCell = Microsoft.VisualBasic.Interaction.InputBox("Enter the TOP LEFT CELL", "Data Entry");
-            var tlc = Utilities.ParseTLC(topLeftCell);
+            Tuple<int, int> tlc;
+            try {
+                tlc = Utilities.ParseTLC(topLeftCell);
+            }
+            catch (ArgumentException e) {
+                select_data_source_info.Text = $"ERROR:  {e.Message}";
+                return false;
+            }
+            catch (FormatException e) {
+                select_data_source_info.Text = $"ERROR:  {e.Message}";
+                return false;
+            }
 
             try {
                 Uri uri = new Uri(url_string);
