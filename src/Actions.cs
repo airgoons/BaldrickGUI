@@ -72,7 +72,7 @@ namespace BaldrickGUI {
                                 }
                             }
 
-                            if (asset_digest.ToString() == hashString) {
+                            if (asset_digest.ToString().ToLower() == hashString) {
                                 initiate_download = false;
                                 update_baldrick_info.Text = "baldrick.zip:  latest version (sha256)";
                             }
