@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
@@ -6,6 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace BaldrickGUI {
     internal class Actions {
@@ -98,16 +100,59 @@ namespace BaldrickGUI {
             }
         }
 
-        internal static void GoogleSheetsDataSelected() {
-            throw new NotImplementedException();
+        internal static bool LocalDataSelected(Label dataSource_info, Label select_data_source_info) {
+            bool result = false;
+
+            return result;
         }
 
-        internal static void LocalDataSelected() {
-            throw new NotImplementedException();
+        internal static bool GoogleSheetsDataSelected(Label dataSource_info, Label select_data_source_info) {
+            bool result = false;
+
+            string url_string = Microsoft.VisualBasic.Interaction.InputBox("Enter a PUBLIC Google Sheets URL", "Data Entry");
+            string topLeftCell = Microsoft.VisualBasic.Interaction.InputBox("Enter the TOP LEFT CELL", "Data Entry");
+
+            try {
+                Uri uri = new Uri(url_string);
+                NameValueCollection queryParams = HttpUtility.ParseQueryString(uri.Query);
+
+                if (!uri.AbsoluteUri.Contains("docs.google.com/spreadsheets/d/")) {
+                    select_data_source_info.Text = "Invalid Google Sheets URL";
+                    return false;
+                }
+
+                string doc_id;
+                try {
+                    // example uri.AbsolutePath return:  /spreadsheets/d/1IEMC4d2dG72zHMpPuf-0l8f8ZalMVn0xe1XLOS03fLI/edit
+                    doc_id = uri.AbsolutePath.Split("/")[3];
+                }
+                catch (IndexOutOfRangeException e) {
+                    select_data_source_info.Text = "Invalid Google Sheets URL";
+                    return false;
+                }
+
+                string gid = queryParams.Get("gid");
+
+                dataSource_info.Text = $"DID:\t{doc_id}\nGID:\t{gid}\nTLC:{topLeftCell}";
+                result = true;
+            }
+            catch (UriFormatException e) {
+                select_data_source_info.Text = "ERROR:  Invalid URL";
+                return false;
+            }
+            catch (ArgumentNullException e) {
+                select_data_source_info.Text = "ERROR:  Null URL";
+                return false;
+            }
+
+            return result;
         }
 
         internal static void RunBaldrick() {
-            throw new NotImplementedException();
+            // unzip baldrick
+            // exec baldrick
+            // package results
+            // cleanup
         }
     }
 }

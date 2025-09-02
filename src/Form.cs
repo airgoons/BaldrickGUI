@@ -9,23 +9,42 @@ namespace BaldrickGUI
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e) {
             if (radioButton1.Checked) {
-                label3.Text = "Local Selected";
-                Actions.LocalDataSelected();
+                dataSource_info.Text = "";
+                select_data_source_info.Text = "";
+                bool result = Actions.LocalDataSelected(dataSource_info, select_data_source_info);
+
+                if (result) {
+                    runBaldrick_button.Enabled = true;
+                }
+                else {
+                    radioButton1.Checked = false;
+                    runBaldrick_button.Enabled = false;
+                }
+
             }
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e) {
             if (radioButton2.Checked) {
                 // open dialog
-                label3.Text = "Google Sheets Selected";
-                Actions.GoogleSheetsDataSelected();
+                dataSource_info.Text = "";
+                select_data_source_info.Text = "";
+                bool result = Actions.GoogleSheetsDataSelected(dataSource_info, select_data_source_info);
+
+                if (result) {
+                    runBaldrick_button.Enabled = true;
+                }
+                else {
+                    radioButton2.Checked = false;
+                    runBaldrick_button.Enabled = false;
+                }
             }
         }
 
         private async void button1_Click(object sender, EventArgs e) {
-            button1.Enabled = false;
+            updateBaldrick_button.Enabled = false;
             await Actions.UpdateBaldrick(update_baldrick_info);
-            button1.Enabled = true;
+            updateBaldrick_button.Enabled = true;
         }
 
         private void button2_Click(object sender, EventArgs e) {
