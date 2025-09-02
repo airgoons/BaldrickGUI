@@ -6,6 +6,8 @@ using System.Web;
 
 namespace BaldrickGUI {
     internal class Actions {
+        internal static string? selected_local_csv_data_path = "";
+        internal static string? selected_gsheets_csv_data_path = "./waypoints.csv";
         internal static async Task UpdateBaldrick(Label update_baldrick_info) {
             update_baldrick_info.Text = "";
 
@@ -25,11 +27,11 @@ namespace BaldrickGUI {
             else {
                 string jsonString = await release_data_response.Content.ReadAsStringAsync();
                 var releaseData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
-                object temp;
+                object? temp;
                 releaseData.TryGetValue("assets", out temp);
                 
                 foreach (var element in ((JsonElement)temp).EnumerateArray()) {
-                    Dictionary<string, object> item = JsonSerializer.Deserialize<Dictionary<string, object>>(element.GetRawText());
+                    Dictionary<string, object>? item = JsonSerializer.Deserialize<Dictionary<string, object>>(element.GetRawText());
                     assetsList.Add(item);
                 }
             }
@@ -37,9 +39,9 @@ namespace BaldrickGUI {
             foreach (var assetData in assetsList) {
                 bool initiate_download = false;
 
-                object asset_filename;
-                object asset_url;
-                object asset_digest;
+                object? asset_filename;
+                object? asset_url;
+                object? asset_digest;
 
                 assetData.TryGetValue("name", out asset_filename);
                 assetData.TryGetValue("browser_download_url", out asset_url);
@@ -109,9 +111,9 @@ namespace BaldrickGUI {
             var dialogResult = dialog.ShowDialog();
 
             if (dialogResult == DialogResult.OK) {
-                string path = dialog.FileName;
+                selected_local_csv_data_path = dialog.FileName;
 
-                dataSource_info.Text = $"File:\n{path}";
+                dataSource_info.Text = $"File:\n{selected_local_csv_data_path}";
                 result = true;
             }
 
@@ -125,7 +127,7 @@ namespace BaldrickGUI {
             
             // @TODO input validation
             string topLeftCell = Microsoft.VisualBasic.Interaction.InputBox("Enter the TOP LEFT CELL", "Data Entry");
-            Tuple<int, int> tlc;
+            Tuple<int, int>? tlc;
             try {
                 tlc = Utilities.ParseTLC(topLeftCell);
             }
@@ -139,7 +141,7 @@ namespace BaldrickGUI {
             }
 
             try {
-                Uri uri = new Uri(url_string);
+                Uri? uri = new Uri(url_string);
                 NameValueCollection queryParams = HttpUtility.ParseQueryString(uri.Query);
 
                 if (!uri.AbsoluteUri.Contains("docs.google.com/spreadsheets/d/")) {
@@ -152,7 +154,7 @@ namespace BaldrickGUI {
                     // example uri.AbsolutePath return:  /spreadsheets/d/1IEMC4d2dG72zHMpPuf-0l8f8ZalMVn0xe1XLOS03fLI/edit
                     doc_id = uri.AbsolutePath.Split("/")[3];
                 }
-                catch (IndexOutOfRangeException e) {
+                catch (IndexOutOfRangeException) {
                     select_data_source_info.Text = "Invalid Google Sheets URL";
                     return false;
                 }
@@ -177,15 +179,16 @@ namespace BaldrickGUI {
 
                 List<string> outputRows = Utilities.ExtractDataFromCSV(raw_gsheet_path, tlc);
 
-                File.WriteAllLines("./waypoints.csv", outputRows);
+                File.WriteAllLines(selected_gsheets_csv_data_path, outputRows);
+
 
                 result = true;
             }
-            catch (UriFormatException e) {
+            catch (UriFormatException) {
                 select_data_source_info.Text = "ERROR:  Invalid URL";
                 return false;
             }
-            catch (ArgumentNullException e) {
+            catch (ArgumentNullException) {
                 select_data_source_info.Text = "ERROR:  Null URL";
                 return false;
             }
