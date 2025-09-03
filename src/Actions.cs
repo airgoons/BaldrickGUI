@@ -11,9 +11,11 @@ using System.Xml.Linq;
 namespace BaldrickGUI {
     internal class Actions {
         internal const string baldrick_path = "./baldrick.zip";
-        internal static string? selected_local_csv_data_path = "";
-        internal static string? selected_gsheets_csv_data_path = "./waypoints.csv";
-        internal static async Task UpdateBaldrick(Label update_baldrick_info) {
+        internal static string selected_local_csv_data_path = "";
+        internal static string selected_gsheets_csv_data_path = "./waypoints.csv";
+        internal static async Task<bool> UpdateBaldrick(Label update_baldrick_info) {
+            bool result = false;
+
             update_baldrick_info.Text = "";
 
             string repo_url = "https://api.github.com/repos/CalirDeminar/Baldrick/releases/latest";
@@ -23,19 +25,30 @@ namespace BaldrickGUI {
             
             var release_data_response = await client.GetAsync(repo_url);
 
-            var assetsList = new List<Dictionary<string, object>>();
+            var assetsList = new List<Dictionary<string, JsonElement>>();
             if (!release_data_response.IsSuccessStatusCode) {
                 update_baldrick_info.Text = $"ERROR: HTTP Status Code {release_data_response.StatusCode.ToString()}";
-                return;
+                return false;
             }
             else {
                 string jsonString = await release_data_response.Content.ReadAsStringAsync();
-                var releaseData = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonString);
-                object? temp;
-                releaseData.TryGetValue("assets", out temp);
-                
-                foreach (var element in ((JsonElement)temp).EnumerateArray()) {
-                    Dictionary<string, object>? item = JsonSerializer.Deserialize<Dictionary<string, object>>(element.GetRawText());
+                Dictionary<string, JsonElement>? releaseData = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(jsonString);
+                if (releaseData == null) {
+                    update_baldrick_info.Text = "ERROR:  null json data";
+                    return false;
+                }
+                JsonElement? temp = releaseData.GetValueOrDefault("assets");
+                if (temp == null) {
+                    update_baldrick_info.Text = "ERROR:  null assets data";
+                    return false;
+                }
+
+                foreach (var element in temp.Value.EnumerateArray()) {
+                    Dictionary<string, JsonElement>? item = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(element.GetRawText());
+                    if (item == null) {
+                        update_baldrick_info.Text = "ERROR: null assets data when deserialized";
+                        return false;
+                    }
                     assetsList.Add(item);
                 }
             }
@@ -43,15 +56,26 @@ namespace BaldrickGUI {
             foreach (var assetData in assetsList) {
                 bool initiate_download = false;
 
-                object? asset_filename;
-                object? asset_url;
-                object? asset_digest;
+                string asset_filename = assetData.GetValueOrDefault("name").ToString();
+                string asset_url = assetData.GetValueOrDefault("browser_download_url").ToString();
+                string asset_digest = assetData.GetValueOrDefault("digest").ToString();
 
-                assetData.TryGetValue("name", out asset_filename);
-                assetData.TryGetValue("browser_download_url", out asset_url);
-                assetData.TryGetValue("digest", out asset_digest);
+                if (string.IsNullOrEmpty(asset_filename)) {
+                    update_baldrick_info.Text = "ERROR: null or empty asset name";
+                    return false;
+                }
 
-                if (asset_filename.ToString() == "baldrick.zip") {
+                if (string.IsNullOrEmpty(asset_url)) {
+                    update_baldrick_info.Text = "ERROR: null or empty asset browser_download_url";
+                    return false;
+                }
+
+                if (string.IsNullOrEmpty(asset_digest)) {
+                    update_baldrick_info.Text = "ERROR: null or empty asset digest";
+                    return false;
+                }
+
+                if (asset_filename == "baldrick.zip") {
                     string hashString = "";
                     if (File.Exists(baldrick_path)) {
                         using (SHA256 sha256hash = SHA256.Create()) {
@@ -76,7 +100,7 @@ namespace BaldrickGUI {
                             }
                         }
 
-                        if (asset_digest.ToString().ToLower() == hashString) {
+                        if (asset_digest.ToLower() == hashString) {
                             initiate_download = false;
                             update_baldrick_info.Text = "baldrick.zip:  latest version (sha256)";
                         }
@@ -96,9 +120,11 @@ namespace BaldrickGUI {
                             }
                         }
                         update_baldrick_info.Text = "Download complete.";
+                        result = true;
                     }
                 }
             }
+            return result;
         }
 
         internal static bool LocalDataSelected(Label dataSource_info, Label select_data_source_info) {
@@ -163,7 +189,11 @@ namespace BaldrickGUI {
                     return false;
                 }
 
-                string gid = queryParams.Get("gid");
+                string? gid = queryParams.Get("gid");
+                if (string.IsNullOrEmpty(gid)) {
+                    select_data_source_info.Text = "ERROR:  GID null or empty";
+                    return false;
+                }
 
                 dataSource_info.Text = $"Doc ID:\t{doc_id}\nGID:\t{gid}\nCell:{topLeftCell}";
 
@@ -205,7 +235,7 @@ namespace BaldrickGUI {
             return result;
         }
 
-        internal static async Task RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
+        internal static void RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
             // unzip baldrick
             run_baldrick_info.Text = "Extracting baldrick.zip";
             var temp_dir = "./temp";
