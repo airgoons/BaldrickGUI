@@ -1,0 +1,38 @@
+name:  .NET Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 9.0.x
+
+    - name: Build and publish
+      run:  dotnet publish --configuration Release --output bin/Release/net9.0/publish
+
+    - name: Create zip archive
+      run: |
+        $fullSha = "${{ github.sha }}"
+        $shortSha = $fullSha.Substring(0,7)
+        $dest = "BaldrickGUI_$shortSha.zip"
+        Compress-Archive -Path "bin/Release/net9.0/publish/*" -Destination $dest
+
+    - name: Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: baldrickgui_build
+        path: |
+          *.zip
+        retention-days: 1
