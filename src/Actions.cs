@@ -236,6 +236,11 @@ namespace BaldrickGUI {
         }
 
         internal static void RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
+            if (!Path.Exists(baldrick_path)) {
+                run_baldrick_info.Text = "ERROR:  baldrick.zip does not exist";
+                return;
+            }
+
             // unzip baldrick
             run_baldrick_info.Text = "Extracting baldrick.zip";
             var temp_dir = "./temp";
