@@ -1,4 +1,6 @@
+[![.NET Build](https://github.com/airgoons/BaldrickGUI/actions/workflows/build.yml/badge.svg)](https://github.com/airgoons/BaldrickGUI/actions/workflows/build.yml)
 # BaldrickGUI
+
 BaldrickGUI is a graphical user interface for calling [Baldrick](https://github.com/CalirDeminar/Baldrick).
 
 ## Features
