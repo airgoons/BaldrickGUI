@@ -1,9 +1,12 @@
 ﻿using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Web;
+using System.Xml.Linq;
 
 namespace BaldrickGUI {
     internal class Actions {
@@ -178,7 +181,12 @@ namespace BaldrickGUI {
                     }
                 }
 
-                List<string> outputRows = Utilities.ExtractDataFromCSV(raw_gsheet_path, tlc);
+                string first_row = "name,latd,latm,lats,longd,longm,longs,notes,tags";
+                List<string> outputRows = new List<string>();
+                outputRows.Add(first_row);
+                foreach (var row in Utilities.ExtractDataFromCSV(raw_gsheet_path, tlc)) {
+                    outputRows.Add(row);
+                }
 
                 File.WriteAllLines(selected_gsheets_csv_data_path, outputRows);
 
@@ -197,7 +205,7 @@ namespace BaldrickGUI {
             return result;
         }
 
-        internal static void RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
+        internal static async Task RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
             // unzip baldrick
             run_baldrick_info.Text = "Extracting baldrick.zip";
             var temp_dir = "./temp";
@@ -209,21 +217,44 @@ namespace BaldrickGUI {
 
             // copy csv file
             string routes_path = $"{temp_dir}/routes";
+            string target_csv;
+
             if (localRadioBtn.Checked) {
-                File.Copy(selected_local_csv_data_path, $"{routes_path}/{Path.GetFileName(selected_local_csv_data_path)}", true);
+                target_csv = selected_local_csv_data_path;
             }
             
             else if (gsheetRadioBtn.Checked) {
-                File.Copy(selected_local_csv_data_path, $"{routes_path}/{Path.GetFileName(selected_gsheets_csv_data_path)}", true);
+                target_csv = selected_gsheets_csv_data_path;
             }
 
             else {
                 return;  // should not get here
             }
+            
+            File.Copy(target_csv, $"{routes_path}/{Path.GetFileName(target_csv)}", true);
             run_baldrick_info.Text = "CSV File Copied";
 
             // exec baldrick
-            // package results
+            var startInfo = new ProcessStartInfo();
+            startInfo.WorkingDirectory = Path.GetFullPath(temp_dir);
+            startInfo.FileName = "baldrick.exe";
+            string route_arg = Path.GetFileNameWithoutExtension(target_csv);
+            startInfo.Arguments = $"{route_arg}";
+            startInfo.UseShellExecute = true;
+            startInfo.RedirectStandardOutput = false;
+            startInfo.RedirectStandardError = false;
+            startInfo.CreateNoWindow = false;
+
+            var process = new Process();
+            process.StartInfo = startInfo;
+            process.Start();
+            process.WaitForExit();
+
+            // get results
+            string results_path = $"{temp_dir}/{route_arg}/{route_arg}_bundle.zip";
+            if (Path.Exists(results_path)) {
+                File.Move(results_path, $"./{Path.GetFileName(results_path)}");
+            }
 
             // cleanup
             Directory.Delete(temp_dir, true);
