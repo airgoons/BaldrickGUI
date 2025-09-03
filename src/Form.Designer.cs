@@ -33,8 +33,8 @@
             tableLayoutPanel2 = new TableLayoutPanel();
             label1 = new Label();
             flowLayoutPanel1 = new FlowLayoutPanel();
-            radioButton1 = new RadioButton();
-            radioButton2 = new RadioButton();
+            local_dataSource_radioButton = new RadioButton();
+            googleSheets_dataSource_radioButton = new RadioButton();
             flowLayoutPanel2 = new FlowLayoutPanel();
             label2 = new Label();
             dataSource_info = new Label();
@@ -80,7 +80,7 @@
             updateBaldrick_button.TabIndex = 0;
             updateBaldrick_button.Text = "Update Baldrick";
             updateBaldrick_button.UseVisualStyleBackColor = true;
-            updateBaldrick_button.Click += button1_Click;
+            updateBaldrick_button.Click += updateBaldrick_button_Click;
             // 
             // runBaldrick_button
             // 
@@ -96,7 +96,7 @@
             runBaldrick_button.TabIndex = 1;
             runBaldrick_button.Text = "Run Baldrick";
             runBaldrick_button.UseVisualStyleBackColor = true;
-            runBaldrick_button.Click += button2_Click;
+            runBaldrick_button.Click += runBaldrick_button_Click;
             // 
             // tableLayoutPanel2
             // 
@@ -134,41 +134,41 @@
             // 
             flowLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             flowLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
-            flowLayoutPanel1.Controls.Add(radioButton1);
-            flowLayoutPanel1.Controls.Add(radioButton2);
+            flowLayoutPanel1.Controls.Add(local_dataSource_radioButton);
+            flowLayoutPanel1.Controls.Add(googleSheets_dataSource_radioButton);
             flowLayoutPanel1.FlowDirection = FlowDirection.TopDown;
             flowLayoutPanel1.Location = new Point(3, 33);
             flowLayoutPanel1.Name = "flowLayoutPanel1";
             flowLayoutPanel1.Size = new Size(231, 131);
             flowLayoutPanel1.TabIndex = 1;
             // 
-            // radioButton1
+            // local_dataSource_radioButton
             // 
-            radioButton1.AutoSize = true;
-            radioButton1.Font = new Font("Consolas", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            radioButton1.Location = new Point(25, 3);
-            radioButton1.Margin = new Padding(25, 3, 3, 3);
-            radioButton1.Name = "radioButton1";
-            radioButton1.Size = new Size(78, 26);
-            radioButton1.TabIndex = 0;
-            radioButton1.TabStop = true;
-            radioButton1.Text = "Local";
-            radioButton1.UseVisualStyleBackColor = true;
-            radioButton1.CheckedChanged += radioButton1_CheckedChanged;
+            local_dataSource_radioButton.AutoSize = true;
+            local_dataSource_radioButton.Font = new Font("Consolas", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            local_dataSource_radioButton.Location = new Point(25, 3);
+            local_dataSource_radioButton.Margin = new Padding(25, 3, 3, 3);
+            local_dataSource_radioButton.Name = "local_dataSource_radioButton";
+            local_dataSource_radioButton.Size = new Size(78, 26);
+            local_dataSource_radioButton.TabIndex = 0;
+            local_dataSource_radioButton.TabStop = true;
+            local_dataSource_radioButton.Text = "Local";
+            local_dataSource_radioButton.UseVisualStyleBackColor = true;
+            local_dataSource_radioButton.CheckedChanged += local_dataSource_radioButton_CheckedChanged;
             // 
-            // radioButton2
+            // googleSheets_dataSource_radioButton
             // 
-            radioButton2.AutoSize = true;
-            radioButton2.Font = new Font("Consolas", 14.25F);
-            radioButton2.Location = new Point(25, 35);
-            radioButton2.Margin = new Padding(25, 3, 3, 3);
-            radioButton2.Name = "radioButton2";
-            radioButton2.Size = new Size(158, 26);
-            radioButton2.TabIndex = 1;
-            radioButton2.TabStop = true;
-            radioButton2.Text = "Google Sheets";
-            radioButton2.UseVisualStyleBackColor = true;
-            radioButton2.CheckedChanged += radioButton2_CheckedChanged;
+            googleSheets_dataSource_radioButton.AutoSize = true;
+            googleSheets_dataSource_radioButton.Font = new Font("Consolas", 14.25F);
+            googleSheets_dataSource_radioButton.Location = new Point(25, 35);
+            googleSheets_dataSource_radioButton.Margin = new Padding(25, 3, 3, 3);
+            googleSheets_dataSource_radioButton.Name = "googleSheets_dataSource_radioButton";
+            googleSheets_dataSource_radioButton.Size = new Size(158, 26);
+            googleSheets_dataSource_radioButton.TabIndex = 1;
+            googleSheets_dataSource_radioButton.TabStop = true;
+            googleSheets_dataSource_radioButton.Text = "Google Sheets";
+            googleSheets_dataSource_radioButton.UseVisualStyleBackColor = true;
+            googleSheets_dataSource_radioButton.CheckedChanged += googleSheets_dataSource_radioButton_CheckedChanged;
             // 
             // flowLayoutPanel2
             // 
@@ -267,8 +267,8 @@
         private Label label1;
         private FlowLayoutPanel flowLayoutPanel1;
         private FlowLayoutPanel flowLayoutPanel2;
-        private RadioButton radioButton1;
-        private RadioButton radioButton2;
+        private RadioButton local_dataSource_radioButton;
+        private RadioButton googleSheets_dataSource_radioButton;
         private Label label2;
         private Label dataSource_info;
         private Label update_baldrick_info;

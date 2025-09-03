@@ -5,8 +5,8 @@ namespace BaldrickGUI
             InitializeComponent();
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e) {
-            if (radioButton1.Checked) {
+        private void local_dataSource_radioButton_CheckedChanged(object sender, EventArgs e) {
+            if (local_dataSource_radioButton.Checked) {
                 dataSource_info.Text = "";
                 select_data_source_info.Text = "";
                 bool result = Actions.LocalDataSelected(dataSource_info, select_data_source_info);
@@ -15,15 +15,15 @@ namespace BaldrickGUI
                     runBaldrick_button.Enabled = true;
                 }
                 else {
-                    radioButton1.Checked = false;
+                    local_dataSource_radioButton.Checked = false;
                     runBaldrick_button.Enabled = false;
                 }
 
             }
         }
 
-        private async void radioButton2_CheckedChanged(object sender, EventArgs e) {
-            if (radioButton2.Checked) {
+        private async void googleSheets_dataSource_radioButton_CheckedChanged(object sender, EventArgs e) {
+            if (googleSheets_dataSource_radioButton.Checked) {
                 // open dialog
                 dataSource_info.Text = "";
                 select_data_source_info.Text = "";
@@ -34,20 +34,22 @@ namespace BaldrickGUI
                     runBaldrick_button.Enabled = true;
                 }
                 else {
-                    radioButton2.Checked = false;
+                    googleSheets_dataSource_radioButton.Checked = false;
                     runBaldrick_button.Enabled = false;
                 }
             }
         }
 
-        private async void button1_Click(object sender, EventArgs e) {
+        private async void updateBaldrick_button_Click (object sender, EventArgs e) {
             updateBaldrick_button.Enabled = false;
             await Actions.UpdateBaldrick(update_baldrick_info);
             updateBaldrick_button.Enabled = true;
         }
 
-        private void button2_Click(object sender, EventArgs e) {
-            Actions.RunBaldrick(run_baldrick_info, radioButton1, radioButton2);
+        private void runBaldrick_button_Click(object sender, EventArgs e) {
+            runBaldrick_button.Enabled = false;
+            Actions.RunBaldrick(run_baldrick_info, local_dataSource_radioButton, googleSheets_dataSource_radioButton);
+            runBaldrick_button.Enabled = true;
         }
     }
 }
