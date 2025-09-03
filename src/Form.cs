@@ -3,6 +3,7 @@ namespace BaldrickGUI
     public partial class Form : System.Windows.Forms.Form {
         public Form() {
             InitializeComponent();
+            updateBaldrick_button_Click(this, new EventArgs());
         }
 
         private void local_dataSource_radioButton_CheckedChanged(object sender, EventArgs e) {

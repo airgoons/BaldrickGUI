@@ -288,7 +288,7 @@ namespace BaldrickGUI {
             // get results
             string results_path = $"{temp_dir}/{route_arg}/{route_arg}_bundle.zip";
             if (Path.Exists(results_path)) {
-                File.Move(results_path, $"./{Path.GetFileName(results_path)}");
+                File.Move(results_path, $"./{Path.GetFileName(results_path)}", true);
             }
 
             // cleanup
