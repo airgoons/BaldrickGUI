@@ -47,7 +47,7 @@ namespace BaldrickGUI
         }
 
         private void button2_Click(object sender, EventArgs e) {
-            Actions.RunBaldrick();
+            Actions.RunBaldrick(run_baldrick_info, radioButton1, radioButton2);
         }
     }
 }

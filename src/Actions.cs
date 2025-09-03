@@ -1,4 +1,5 @@
 ﻿using System.Collections.Specialized;
+using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -6,12 +7,12 @@ using System.Web;
 
 namespace BaldrickGUI {
     internal class Actions {
+        internal const string baldrick_path = "./baldrick.zip";
         internal static string? selected_local_csv_data_path = "";
         internal static string? selected_gsheets_csv_data_path = "./waypoints.csv";
         internal static async Task UpdateBaldrick(Label update_baldrick_info) {
             update_baldrick_info.Text = "";
 
-            string baldrick_path = "./baldrick.zip";
             string repo_url = "https://api.github.com/repos/CalirDeminar/Baldrick/releases/latest";
 
             HttpClient client = new HttpClient();
@@ -196,13 +197,37 @@ namespace BaldrickGUI {
             return result;
         }
 
-
-
-        internal static void RunBaldrick() {
+        internal static void RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
             // unzip baldrick
+            run_baldrick_info.Text = "Extracting baldrick.zip";
+            var temp_dir = "./temp";
+            if (!Directory.Exists(temp_dir)) {
+                Directory.CreateDirectory(temp_dir);
+            }
+
+            ZipFile.ExtractToDirectory(baldrick_path, temp_dir, true);
+
+            // copy csv file
+            string routes_path = $"{temp_dir}/routes";
+            if (localRadioBtn.Checked) {
+                File.Copy(selected_local_csv_data_path, $"{routes_path}/{Path.GetFileName(selected_local_csv_data_path)}", true);
+            }
+            
+            else if (gsheetRadioBtn.Checked) {
+                File.Copy(selected_local_csv_data_path, $"{routes_path}/{Path.GetFileName(selected_gsheets_csv_data_path)}", true);
+            }
+
+            else {
+                return;  // should not get here
+            }
+            run_baldrick_info.Text = "CSV File Copied";
+
             // exec baldrick
             // package results
+
             // cleanup
+            Directory.Delete(temp_dir, true);
+            run_baldrick_info.Text = "Run Complete.";
         }
     }
 }
