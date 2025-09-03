@@ -282,6 +282,8 @@ namespace BaldrickGUI {
 
             var process = new Process();
             process.StartInfo = startInfo;
+
+            run_baldrick_info.Text = "Running...";
             process.Start();
             process.WaitForExit();
 
