@@ -235,7 +235,7 @@ namespace BaldrickGUI {
             return result;
         }
 
-        internal static void RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
+        internal static async Task RunBaldrick(Label run_baldrick_info, RadioButton localRadioBtn, RadioButton gsheetRadioBtn) {
             if (!Path.Exists(baldrick_path)) {
                 run_baldrick_info.Text = "ERROR:  baldrick.zip does not exist";
                 return;
@@ -257,7 +257,7 @@ namespace BaldrickGUI {
             if (localRadioBtn.Checked) {
                 target_csv = selected_local_csv_data_path;
             }
-            
+
             else if (gsheetRadioBtn.Checked) {
                 target_csv = selected_gsheets_csv_data_path;
             }
@@ -265,27 +265,11 @@ namespace BaldrickGUI {
             else {
                 return;  // should not get here
             }
-            
+
             File.Copy(target_csv, $"{routes_path}/{Path.GetFileName(target_csv)}", true);
             run_baldrick_info.Text = "CSV File Copied";
 
-            // exec baldrick
-            var startInfo = new ProcessStartInfo();
-            startInfo.WorkingDirectory = Path.GetFullPath(temp_dir);
-            startInfo.FileName = "baldrick.exe";
-            string route_arg = Path.GetFileNameWithoutExtension(target_csv);
-            startInfo.Arguments = $"{route_arg}";
-            startInfo.UseShellExecute = true;
-            startInfo.RedirectStandardOutput = false;
-            startInfo.RedirectStandardError = false;
-            startInfo.CreateNoWindow = false;
-
-            var process = new Process();
-            process.StartInfo = startInfo;
-
-            run_baldrick_info.Text = "Running...";
-            process.Start();
-            process.WaitForExit();
+            string route_arg = await ExecBaldrick(run_baldrick_info, temp_dir, target_csv);
 
             // get results
             string results_path = $"{temp_dir}/{route_arg}/{route_arg}_bundle.zip";
@@ -296,6 +280,35 @@ namespace BaldrickGUI {
             // cleanup
             Directory.Delete(temp_dir, true);
             run_baldrick_info.Text = "Run Complete.";
+        }
+
+        private static Task<string> ExecBaldrick(Label run_baldrick_info, string temp_dir, string target_csv) {
+            var tcs = new TaskCompletionSource<string>();
+
+            string route_arg = Path.GetFileNameWithoutExtension(target_csv);
+
+            var process = new Process {
+                StartInfo = {
+                    WorkingDirectory = Path.GetFullPath(temp_dir),
+                    FileName = "baldrick.exe",
+                    Arguments = $"{route_arg}",
+                    UseShellExecute = true,
+                    RedirectStandardOutput = false,
+                    RedirectStandardError = false,
+                    CreateNoWindow = false
+                },
+                EnableRaisingEvents = true
+            };
+
+            run_baldrick_info.Text = "Running...";
+
+            process.Exited += (sender, args) => {
+                tcs.SetResult(route_arg);
+                process.Dispose();
+            };
+            
+            process.Start();
+            return tcs.Task;
         }
     }
 }

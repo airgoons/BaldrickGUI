@@ -47,7 +47,7 @@ namespace BaldrickGUI
             updateBaldrick_button.Enabled = true;
         }
 
-        private void runBaldrick_button_Click(object sender, EventArgs e) {
+        private async void runBaldrick_button_Click(object sender, EventArgs e) {
             List<ButtonBase> buttons = new List<ButtonBase> {
                 runBaldrick_button, updateBaldrick_button, local_dataSource_radioButton, googleSheets_dataSource_radioButton
             };
@@ -57,7 +57,7 @@ namespace BaldrickGUI
                 button.Enabled = false;
             }
 
-            Actions.RunBaldrick(run_baldrick_info, local_dataSource_radioButton, googleSheets_dataSource_radioButton);
+            await Actions.RunBaldrick(run_baldrick_info, local_dataSource_radioButton, googleSheets_dataSource_radioButton);
 
             // re-enable when task is complete
             foreach (var button in buttons) {
