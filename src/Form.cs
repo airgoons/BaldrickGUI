@@ -47,10 +47,22 @@ namespace BaldrickGUI
             updateBaldrick_button.Enabled = true;
         }
 
-        private void runBaldrick_button_Click(object sender, EventArgs e) {
-            runBaldrick_button.Enabled = false;
-            Actions.RunBaldrick(run_baldrick_info, local_dataSource_radioButton, googleSheets_dataSource_radioButton);
-            runBaldrick_button.Enabled = true;
+        private async void runBaldrick_button_Click(object sender, EventArgs e) {
+            List<ButtonBase> buttons = new List<ButtonBase> {
+                runBaldrick_button, updateBaldrick_button, local_dataSource_radioButton, googleSheets_dataSource_radioButton
+            };
+
+            // prevent UI and file access issues by disabling the various UI controls
+            foreach (var button in buttons) {
+                button.Enabled = false;
+            }
+
+            await Actions.RunBaldrick(run_baldrick_info, local_dataSource_radioButton, googleSheets_dataSource_radioButton);
+
+            // re-enable when task is complete
+            foreach (var button in buttons) {
+                button.Enabled = true;
+            }
         }
     }
 }
